@@ -14,8 +14,8 @@ public class CustomParticle : MonoBehaviour
     [Space(5)]
     // Mass
     public float mass;
-    // Position
-    // Transform.position
+    // Rigidbody
+    public Rigidbody rb;
 
     // Speed
     public Vector3 speed;
@@ -39,12 +39,19 @@ public class CustomParticle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public bool isDead() {
+        if(timeToLive < Time.time - spawnTime)
+            return true;
+        
+        return false;
     }
 }

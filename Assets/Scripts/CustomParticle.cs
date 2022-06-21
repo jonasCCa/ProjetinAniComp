@@ -26,13 +26,13 @@ public class CustomParticle : MonoBehaviour
     [Header("Visual")]
     [Space(5)]
     // Size
-    public float sizeMultiplier;
+    public float sizeModifier;
+    // Color
+    public float rModifier, gModifier, bModifier;
     // Shape
     public bool is3D;
     public Sprite sprite;
     public GameObject mesh;
-    // Color
-    public Color colorModifier;
     // Transparency
     public float alphaMultiplier;
 

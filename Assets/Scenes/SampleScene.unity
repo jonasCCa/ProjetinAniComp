@@ -153,18 +153,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particlePrefab: {fileID: 3999795245026544540, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-  isSpawning: 1
-  spawnDelay: 0
-  maxSpawnPerFrame: 1
-  particleQuantity: 30
-  minTTL: 3
-  maxTTL: 7
-  particleArray: []
+  colorMin: {r: 1, g: 1, b: 1, a: 0}
+  colorMax: {r: 1, g: 1, b: 1, a: 0}
+  changesColor: 0
+  finalColorMin: {r: 0, g: 0, b: 0, a: 0}
+  finalColorMax: {r: 0, g: 0, b: 0, a: 0}
+  sizeMin: 0.3
+  sizeMax: 0.3
+  changesSize: 0
+  finalSizeMin: 1
+  finalSizeMax: 1
+  useGravity: 0
   minSpeed: {x: -50, y: 100, z: -50}
   maxSpeed: {x: 50, y: 300, z: 50}
   minAccel: {x: 0, y: 0, z: 0}
   maxAccel: {x: 0, y: 0, z: 0}
-  useGravity: 0
+  isSpawning: 1
+  spawnDelay: 0
+  maxSpawnPerFrame: 1
+  particleQuantity: 30
+  minTTL: 2
+  maxTTL: 4
+  particleArray: []
 --- !u!4 &661885316
 Transform:
   m_ObjectHideFlags: 0

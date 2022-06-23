@@ -16,7 +16,6 @@ public class CustomParticle : MonoBehaviour
     public float mass;
     // Rigidbody
     public Rigidbody rb;
-
     // Speed
     public Vector3 speed;
     // Acceleration

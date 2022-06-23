@@ -168,6 +168,10 @@ MonoBehaviour:
   maxSpeed: {x: 50, y: 300, z: 50}
   minAccel: {x: 0, y: 0, z: 0}
   maxAccel: {x: 0, y: 0, z: 0}
+  customFormula:
+  - 
+  - 
+  - 
   isSpawning: 1
   spawnDelay: 0
   maxSpawnPerFrame: 1

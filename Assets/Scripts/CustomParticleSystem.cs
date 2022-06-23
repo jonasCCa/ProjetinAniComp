@@ -17,6 +17,10 @@ public class CustomParticleSystem : MonoBehaviour
     public bool useGravity;
     public Vector3 minSpeed, maxSpeed;
     public Vector3 minAccel, maxAccel;
+
+    [Header("Custom Formula")]
+    public string[] customFormula;
+    Exp[] formula;
     
     [Header("Particles")]
     public bool isSpawning;
@@ -30,11 +34,14 @@ public class CustomParticleSystem : MonoBehaviour
     // Auxiliares
     float pScale;
     Renderer mr;
+    Exp auxExp;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        formula = new Exp[3];
+
+        formula[0] = new Mult(new Sin(new Var(VarType.X_POS)), new Num(0.1f));
     }
 
     // Update is called once per frame
@@ -61,13 +68,31 @@ public class CustomParticleSystem : MonoBehaviour
             }
         }
 
+        
+    }
+
+    void FixedUpdate() {
+        // Executa partículas
         for(int i=0; i<particleArray.Count; i++) {
             CustomParticle p = particleArray[i];
             
-            // Executa particula
-
             // Aceleração
             p.rb.AddForce(p.accel);
+
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Exemplo de uso do interpretador
+            // Mover na posição X com interpretador
+            // auxExp = Interpretador.interpretar(formula[0],p);
+            // while (!(auxExp is Num)) {
+            //     //Debug.Log(auxExp); // Não rodar isso com muitas particulas pelamor
+            //     auxExp = Interpretador.interpretar(auxExp, p);
+            // }
+
+            // // Usando y=y+5 por enquanto
+            // p.rb.MovePosition(new Vector3(p.transform.position.x+5*Time.deltaTime,
+            //                               p.transform.position.y+((Num)auxExp).getValor(),
+            //                               p.transform.position.z));
+            /////////////////////////////////////////////////////////////////////////////////////
 
             // Tamanho
             if(changesSize) {
@@ -137,6 +162,7 @@ public class CustomParticleSystem : MonoBehaviour
         // Gravidade da engine
         p.rb.useGravity = useGravity;
         // Velocidade inicial
+        // if usar interpretador
         p.rb.AddForce(p.speed);
     }
 }

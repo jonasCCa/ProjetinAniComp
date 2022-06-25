@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using org.mariuszgromada.math.mxparser;
 
 public class CustomParticleSystem : MonoBehaviour
 {
@@ -17,10 +18,12 @@ public class CustomParticleSystem : MonoBehaviour
     public bool useGravity;
     public Vector3 minSpeed, maxSpeed;
     public Vector3 minAccel, maxAccel;
+    public Vector3 externalForce;
 
-    [Header("Custom Formula")]
+    //[Header("Custom Formula")]
+    [Tooltip("Usage: \nElement 0 for x += ...\nElement 1 for y += ...\nElement 2 for z += ...")]
     public string[] customFormula;
-    Exp[] formula;
+    //Exp[] formula;
     
     [Header("Particles")]
     public bool isSpawning;
@@ -34,14 +37,17 @@ public class CustomParticleSystem : MonoBehaviour
     // Auxiliares
     float pScale;
     Renderer mr;
-    Exp auxExp;
+    Argument argX = new Argument("x",0);
+    Argument argY = new Argument("y",0);
+    Argument argZ = new Argument("z",0);
+    Expression e;
 
     // Start is called before the first frame update
     void Start()
     {
-        formula = new Exp[3];
+        //formula = new Exp[3];
 
-        formula[0] = new Mult(new Sin(new Var(VarType.X_POS)), new Num(0.1f));
+        //formula[0] = new Mult(new Sin(new Var(VarType.X_POS)), new Num(0.1f));
     }
 
     // Update is called once per frame
@@ -79,20 +85,18 @@ public class CustomParticleSystem : MonoBehaviour
             // Aceleração
             p.rb.AddForce(p.accel);
 
-            ///////////////////////////////////////////////////////////////////////////////////
-            // Exemplo de uso do interpretador
-            // Mover na posição X com interpretador
-            // auxExp = Interpretador.interpretar(formula[0],p);
-            // while (!(auxExp is Num)) {
-            //     //Debug.Log(auxExp); // Não rodar isso com muitas particulas pelamor
-            //     auxExp = Interpretador.interpretar(auxExp, p);
-            // }
+            // Força externa
+            p.rb.AddForce(externalForce);
 
-            // // Usando y=y+5 por enquanto
+            // argX.setArgumentValue(p.transform.position.x);
+            // argY.setArgumentValue(p.transform.position.y);
+            // argZ.setArgumentValue(p.transform.position.z);
+
+            // float mov = (float)e.calculate();
+
             // p.rb.MovePosition(new Vector3(p.transform.position.x+5*Time.deltaTime,
-            //                               p.transform.position.y+((Num)auxExp).getValor(),
+            //                               p.transform.position.y+mov,
             //                               p.transform.position.z));
-            /////////////////////////////////////////////////////////////////////////////////////
 
             // Tamanho
             if(changesSize) {
@@ -164,5 +168,14 @@ public class CustomParticleSystem : MonoBehaviour
         // Velocidade inicial
         // if usar interpretador
         p.rb.AddForce(p.speed);
+    }
+
+    public void setExternalForce(Vector3 input) {
+        externalForce = input;
+    }
+
+    [ContextMenu("Set Formulas")]
+    public void setFormula() {
+        e = new Expression(customFormula[1], argX, argY, argZ);
     }
 }

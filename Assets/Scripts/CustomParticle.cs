@@ -13,8 +13,6 @@ public class CustomParticle : MonoBehaviour
     [Space(5)]
     [Header("Physics")]
     [Space(5)]
-    // Mass
-    public float mass;
     // Rigidbody
     public Rigidbody rb;
     // Speed
@@ -23,18 +21,17 @@ public class CustomParticle : MonoBehaviour
     public Vector3 accel;
 
     [Space(5)]
+    [Header("Skew (With Formulas")]
+    [Space(5)]
+    public Vector3 randSkew;
+
+    [Space(5)]
     [Header("Visual")]
     [Space(5)]
     // Size
     public float sizeModifier;
     // Color
     public float rModifier, gModifier, bModifier;
-    // Shape
-    public bool is3D;
-    public Sprite sprite;
-    public GameObject mesh;
-    // Transparency
-    public float alphaMultiplier;
 
     // Start is called before the first frame update
     void Start()

@@ -153,6 +153,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particlePrefab: {fileID: 3999795245026544540, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
+  overrideRotation: 0
+  minRotation: {x: 0, y: 0, z: 0, w: 0}
+  maxRotation: {x: 0, y: 0, z: 0, w: 0}
   colorMin: {r: 1, g: 1, b: 1, a: 0}
   colorMax: {r: 1, g: 1, b: 1, a: 0}
   changesColor: 0
@@ -164,6 +167,12 @@ MonoBehaviour:
   finalSizeMin: 1
   finalSizeMax: 1
   useGravity: 0
+  useCollision: 0
+  collisionType: 0
+  particleLayer: 7
+  particleMass: 1
+  minSpawnPos: {x: 0, y: 0, z: 0}
+  maxSpawnPos: {x: 0, y: 0, z: 0}
   minSpeed: {x: -50, y: 100, z: -50}
   maxSpeed: {x: 50, y: 300, z: 50}
   minAccel: {x: 0, y: 0, z: 0}
@@ -173,6 +182,8 @@ MonoBehaviour:
   - 
   - 
   - 
+  minSkew: {x: 0, y: 0, z: 0}
+  maxSkew: {x: 0, y: 0, z: 0}
   foo: 0
   bar: 0
   isSpawning: 1
@@ -372,64 +383,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &6538711403236456926
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2362841781721661934, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3999795245026544540, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_Name
-      value: Particle
-      objectReference: {fileID: 0}
-    - target: {fileID: 3999795245026544540, guid: cc2e73b43d4317843908f118f00cec42, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cc2e73b43d4317843908f118f00cec42, type: 3}

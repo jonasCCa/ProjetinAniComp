@@ -8,6 +8,8 @@ public class CustomParticleSystem : MonoBehaviour
 {
     [Header("Visuals")]
     public GameObject particlePrefab;
+    public bool overrideRotation;
+    public Quaternion minRotation, maxRotation;
     public Color colorMin, colorMax;
     public bool changesColor;
     public Color finalColorMin, finalColorMax;
@@ -15,8 +17,14 @@ public class CustomParticleSystem : MonoBehaviour
     public bool changesSize;
     public float finalSizeMin, finalSizeMax = 1f;
 
-    [Header("Physics")]
+    [Header("Movement")]
     public bool useGravity;
+    public bool useCollision;
+    public CollisionType collisionType;
+    [Tooltip("You can set a Layer for your particles, put the index here.\nWARNING: You may want to disable self-colliding on the Project Settings > Physics")]
+    public int particleLayer;
+    public float particleMass = 1;
+    public Vector3 minSpawnPos, maxSpawnPos;
     public Vector3 minSpeed, maxSpeed;
     public Vector3 minAccel, maxAccel;
     public Vector3 externalForce;
@@ -24,6 +32,7 @@ public class CustomParticleSystem : MonoBehaviour
     //[Header("Custom Formula")]
     [Tooltip("Usage: \nElement 0 for x = ...\nElement 1 for y = ...\nElement 2 for z = ...")]
     public string[] customFormulas;
+    public Vector3 minSkew, maxSkew;
     bool usingFormula;
     [Button("SetFormulas", BindingFlags.NonPublic | BindingFlags.Instance)] public bool foo;
     void SetFormulas() {
@@ -46,11 +55,14 @@ public class CustomParticleSystem : MonoBehaviour
 
     // Auxiliares
     float pScale;
+    Quaternion newRotation;
+    Vector3 spawnPos;
     Renderer mr;
     Argument argX = new Argument("x",0);
     Argument argY = new Argument("y",0);
     Argument argZ = new Argument("z",0);
     Expression expX, expY, expZ;
+    public enum CollisionType {CUBE, SPHERE}
 
     // Start is called before the first frame update
     void Start()
@@ -90,6 +102,7 @@ public class CustomParticleSystem : MonoBehaviour
         for(int i=0; i<particleArray.Count; i++) {
             CustomParticle p = particleArray[i];
             
+            // Calcular usando física
             if(!usingFormula) {
                 // Aceleração
                 p.rb.AddForce(p.accel);
@@ -97,14 +110,17 @@ public class CustomParticleSystem : MonoBehaviour
                 // Força externa
                 p.rb.AddForce(externalForce);
             } else {
+                // Calcular usando fórmulas
                 argX.setArgumentValue(p.transform.position.x - p.spawnPos.x);
                 argY.setArgumentValue(p.transform.position.y - p.spawnPos.y);
                 argZ.setArgumentValue(p.transform.position.z - p.spawnPos.z);
 
-                float movX = (float)expX.calculate();
-                float movY = (float)expY.calculate();
-                float movZ = (float)expZ.calculate();
+                // Adicionar desvios
+                float movX = (float)expX.calculate() + p.randSkew.x;
+                float movY = (float)expY.calculate() + p.randSkew.y;
+                float movZ = (float)expZ.calculate() + p.randSkew.z;
 
+                // Mover partícula
                 p.rb.MovePosition(new Vector3(p.spawnPos.x+movX,
                                               p.spawnPos.y+movY,
                                               p.spawnPos.z+movZ));
@@ -125,6 +141,7 @@ public class CustomParticleSystem : MonoBehaviour
                                               mr.material.color.b+p.bModifier*Time.deltaTime);
             }
 
+            // Destruir
             if (p.isDead()) {
                 Destroy(particleArray[i].gameObject);
 
@@ -135,19 +152,49 @@ public class CustomParticleSystem : MonoBehaviour
     }
 
     void InstantiateParticle() {
-        // Mudar poisção inicial da partícula para emissões diferentes
-        CustomParticle p = Instantiate(particlePrefab, transform.position, Quaternion.identity, transform).GetComponent<CustomParticle>();
+        CustomParticle p;
+
+        // Posição inicial
+        spawnPos.x = transform.position.x + Random.Range(minSpawnPos.x, maxSpawnPos.x);
+        spawnPos.y = transform.position.y + Random.Range(minSpawnPos.y, maxSpawnPos.y);
+        spawnPos.z = transform.position.z + Random.Range(minSpawnPos.z, maxSpawnPos.z);
+
+        // Rotação inicial
+        if(overrideRotation) {
+            newRotation.x = Random.Range(minRotation.x,maxRotation.x);
+            newRotation.y = Random.Range(minRotation.y,maxRotation.y);
+            newRotation.z = Random.Range(minRotation.z,maxRotation.w);
+            newRotation.w = Random.Range(minRotation.z,maxRotation.w);
+
+            // Rotação modificada
+            p = Instantiate(particlePrefab, spawnPos, newRotation, transform).AddComponent<CustomParticle>();
+        } else {
+            // Rotação 0
+            p = Instantiate(particlePrefab, spawnPos, Quaternion.identity, transform).AddComponent<CustomParticle>();
+        }
+
+        // Seleção de colisor, se optar
+        if(useCollision) {
+            if(collisionType == CollisionType.CUBE)
+                p.gameObject.AddComponent<BoxCollider>();
+            else
+                p.gameObject.AddComponent<SphereCollider>();
+        }
+        // Layer de colisão, dependente de projeto
+        p.gameObject.layer = particleLayer;
+
         particleArray.Add(p);
 
         // Momento do nascimento da partícula
         p.spawnTime = Time.time;
         // Posição inicial da partícula
-        p.spawnPos = p.transform.position;
+        p.spawnPos = spawnPos;
 
         // Setar configs da partícula
         p.timeToLive = Random.Range(minTTL, maxTTL);
 
         //// Visuals ////
+
         mr = p.GetComponent<Renderer>();
         // Cor inicial
         mr.material.color = new Color(Random.Range(colorMin.r, colorMax.r),
@@ -175,9 +222,15 @@ public class CustomParticleSystem : MonoBehaviour
         p.accel.x = Random.Range(minAccel.x, maxAccel.x);
         p.accel.y = Random.Range(minAccel.y, maxAccel.y);
         p.accel.z = Random.Range(minAccel.z, maxAccel.z);
+        // Desvio na fórmula
+        p.randSkew.x = Random.Range(minSkew.x, maxSkew.x);
+        p.randSkew.y = Random.Range(minSkew.y, maxSkew.y);
+        p.randSkew.z = Random.Range(minSkew.z, maxSkew.z);
 
         // Setar Rigidbody
-        p.rb = p.GetComponent<Rigidbody>();
+        p.rb = p.gameObject.AddComponent<Rigidbody>();
+        // Massa da partícula
+        p.rb.mass = particleMass;
         // Gravidade da engine
         p.rb.useGravity = useGravity;
         // Velocidade inicial

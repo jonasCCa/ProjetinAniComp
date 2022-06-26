@@ -8,6 +8,7 @@ public class CustomParticle : MonoBehaviour
     [Header("Lifetime")]
     public float timeToLive; // In seconds
     public float spawnTime;
+    public Vector3 spawnPos;
 
     [Space(5)]
     [Header("Physics")]

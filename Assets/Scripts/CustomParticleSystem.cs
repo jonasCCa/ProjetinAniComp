@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,9 +22,18 @@ public class CustomParticleSystem : MonoBehaviour
     public Vector3 externalForce;
 
     //[Header("Custom Formula")]
-    [Tooltip("Usage: \nElement 0 for x += ...\nElement 1 for y += ...\nElement 2 for z += ...")]
-    public string[] customFormula;
-    //Exp[] formula;
+    [Tooltip("Usage: \nElement 0 for x = ...\nElement 1 for y = ...\nElement 2 for z = ...")]
+    public string[] customFormulas;
+    bool usingFormula;
+    [Button("SetFormulas", BindingFlags.NonPublic | BindingFlags.Instance)] public bool foo;
+    void SetFormulas() {
+        if(ValidateFormulas())
+            usingFormula = true;
+    }
+    [Button("StopFormulas", BindingFlags.NonPublic | BindingFlags.Instance)] public bool bar;
+    void StopFormulas() {
+        usingFormula = false;
+    }
     
     [Header("Particles")]
     public bool isSpawning;
@@ -40,14 +50,12 @@ public class CustomParticleSystem : MonoBehaviour
     Argument argX = new Argument("x",0);
     Argument argY = new Argument("y",0);
     Argument argZ = new Argument("z",0);
-    Expression e;
+    Expression expX, expY, expZ;
 
     // Start is called before the first frame update
     void Start()
     {
-        //formula = new Exp[3];
 
-        //formula[0] = new Mult(new Sin(new Var(VarType.X_POS)), new Num(0.1f));
     }
 
     // Update is called once per frame
@@ -82,21 +90,25 @@ public class CustomParticleSystem : MonoBehaviour
         for(int i=0; i<particleArray.Count; i++) {
             CustomParticle p = particleArray[i];
             
-            // Aceleração
-            p.rb.AddForce(p.accel);
+            if(!usingFormula) {
+                // Aceleração
+                p.rb.AddForce(p.accel);
 
-            // Força externa
-            p.rb.AddForce(externalForce);
+                // Força externa
+                p.rb.AddForce(externalForce);
+            } else {
+                argX.setArgumentValue(p.transform.position.x - p.spawnPos.x);
+                argY.setArgumentValue(p.transform.position.y - p.spawnPos.y);
+                argZ.setArgumentValue(p.transform.position.z - p.spawnPos.z);
 
-            // argX.setArgumentValue(p.transform.position.x);
-            // argY.setArgumentValue(p.transform.position.y);
-            // argZ.setArgumentValue(p.transform.position.z);
+                float movX = (float)expX.calculate();
+                float movY = (float)expY.calculate();
+                float movZ = (float)expZ.calculate();
 
-            // float mov = (float)e.calculate();
-
-            // p.rb.MovePosition(new Vector3(p.transform.position.x+5*Time.deltaTime,
-            //                               p.transform.position.y+mov,
-            //                               p.transform.position.z));
+                p.rb.MovePosition(new Vector3(p.spawnPos.x+movX,
+                                              p.spawnPos.y+movY,
+                                              p.spawnPos.z+movZ));
+            }
 
             // Tamanho
             if(changesSize) {
@@ -123,11 +135,14 @@ public class CustomParticleSystem : MonoBehaviour
     }
 
     void InstantiateParticle() {
+        // Mudar poisção inicial da partícula para emissões diferentes
         CustomParticle p = Instantiate(particlePrefab, transform.position, Quaternion.identity, transform).GetComponent<CustomParticle>();
         particleArray.Add(p);
 
         // Momento do nascimento da partícula
         p.spawnTime = Time.time;
+        // Posição inicial da partícula
+        p.spawnPos = p.transform.position;
 
         // Setar configs da partícula
         p.timeToLive = Random.Range(minTTL, maxTTL);
@@ -166,8 +181,8 @@ public class CustomParticleSystem : MonoBehaviour
         // Gravidade da engine
         p.rb.useGravity = useGravity;
         // Velocidade inicial
-        // if usar interpretador
-        p.rb.AddForce(p.speed);
+        if(!usingFormula)
+            p.rb.AddForce(p.speed);
     }
 
     public void setExternalForce(Vector3 input) {
@@ -175,7 +190,27 @@ public class CustomParticleSystem : MonoBehaviour
     }
 
     [ContextMenu("Set Formulas")]
-    public void setFormula() {
-        e = new Expression(customFormula[1], argX, argY, argZ);
+    public bool ValidateFormulas() {
+        if(customFormulas.Length==3) {
+            if(customFormulas[0].Length>0 && customFormulas[1].Length>0 && customFormulas[2].Length>0) {
+                expX = new Expression(customFormulas[0], argX, argY, argZ);
+                expY = new Expression(customFormulas[1], argX, argY, argZ);
+                expZ = new Expression(customFormulas[2], argX, argY, argZ);
+
+                if(!expX.checkSyntax() || !expY.checkSyntax() || !expZ.checkSyntax()){
+                    Debug.LogWarning("Invalid formula(s)\nDetails:\n" + expX.getErrorMessage() + "\n"
+                                                                      + expY.getErrorMessage() + "\n"
+                                                                      + expZ.getErrorMessage());
+                    return false;
+                }
+
+                return true;
+            }
+            Debug.LogWarning("Invalid empty formula");
+            return false;
+        }
+
+        Debug.LogWarning("Too few formulas; 3 are needed, one for each position axis");
+        return false;
     }
 }

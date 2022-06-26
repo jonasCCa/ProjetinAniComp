@@ -169,14 +169,16 @@ MonoBehaviour:
   minAccel: {x: 0, y: 0, z: 0}
   maxAccel: {x: 0, y: 0, z: 0}
   externalForce: {x: 0, y: 0, z: 0}
-  customFormula:
+  customFormulas:
   - 
-  - sin(x)
   - 
+  - 
+  foo: 0
+  bar: 0
   isSpawning: 1
   spawnDelay: 0
   maxSpawnPerFrame: 1
-  particleQuantity: 1
+  particleQuantity: 30
   minTTL: 2
   maxTTL: 4
   particleArray: []

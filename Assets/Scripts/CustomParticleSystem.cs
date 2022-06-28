@@ -6,6 +6,15 @@ using org.mariuszgromada.math.mxparser;
 
 public class CustomParticleSystem : MonoBehaviour
 {
+    [Header("Particles")]
+    public bool isSpawning;
+    public float spawnDelay;
+    public int maxSpawnPerFrame = 1;
+    float lastSpawned;
+    public int particleQuantity;
+    public float minTTL, maxTTL;
+    public List<CustomParticle> particleArray;
+    
     [Header("Visuals")]
     public GameObject particlePrefab;
     public bool overrideRotation;
@@ -43,15 +52,6 @@ public class CustomParticleSystem : MonoBehaviour
     void StopFormulas() {
         usingFormula = false;
     }
-    
-    [Header("Particles")]
-    public bool isSpawning;
-    public float spawnDelay;
-    public int maxSpawnPerFrame = 1;
-    float lastSpawned;
-    public int particleQuantity;
-    public float minTTL, maxTTL;
-    public List<CustomParticle> particleArray;
 
     // Auxiliares
     float pScale;
@@ -101,6 +101,16 @@ public class CustomParticleSystem : MonoBehaviour
         // Executa partículas
         for(int i=0; i<particleArray.Count; i++) {
             CustomParticle p = particleArray[i];
+
+            // Destruir
+            if (p.isDead()) {
+                Destroy(particleArray[i].gameObject);
+
+                particleArray.RemoveAt(i);
+                i--;
+
+                continue;
+            }
             
             // Calcular usando física
             if(!usingFormula) {
@@ -139,14 +149,6 @@ public class CustomParticleSystem : MonoBehaviour
                 mr.material.color = new Color(mr.material.color.r+p.rModifier*Time.deltaTime,
                                               mr.material.color.g+p.gModifier*Time.deltaTime,
                                               mr.material.color.b+p.bModifier*Time.deltaTime);
-            }
-
-            // Destruir
-            if (p.isDead()) {
-                Destroy(particleArray[i].gameObject);
-
-                particleArray.RemoveAt(i);
-                i--;
             }
         }
     }
@@ -242,7 +244,6 @@ public class CustomParticleSystem : MonoBehaviour
         externalForce = input;
     }
 
-    [ContextMenu("Set Formulas")]
     public bool ValidateFormulas() {
         if(customFormulas.Length==3) {
             if(customFormulas[0].Length>0 && customFormulas[1].Length>0 && customFormulas[2].Length>0) {

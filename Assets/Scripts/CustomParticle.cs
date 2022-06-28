@@ -33,18 +33,6 @@ public class CustomParticle : MonoBehaviour
     // Color
     public float rModifier, gModifier, bModifier;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public bool isDead() {
         if(timeToLive < Time.time - spawnTime)
             return true;
